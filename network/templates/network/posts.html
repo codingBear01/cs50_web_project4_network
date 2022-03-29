@@ -14,20 +14,41 @@
       <h5>POST No.{{ post.id }}</h5>
 
       <div class="author_wrapper">
-        <div>Author: {{ post.user.username }}</div>
+        <a href="{% url 'profile' post.user %}">
+          <div>Author: {{ post.user.username }}</div>
+        </a>
 
         {% if post.user.username == user.username %}
         <div class="button_box">
           <button type="submit" class="post_page_btn" name="comment_edit">Edit</button> | 
-          <a data-bs-toggle="modal" data-bs-target="#modal">
-            <button type="button" id="post_delete" class="post_page_btn" name="post_delete">Delete</button>
-          </a>
+          <button type="button" id="post_delete" class="post_page_btn" data-bs-toggle="modal" data-bs-target="#post_modal">Delete</button>
           </div>
           {% endif %}
       </div>
       <div>Date: {{ post.created_time }}</div>
       <div>❤ {{ post.likeCount}}</div>
       <div>Content: {{ post.content }}</div>
+    </div>
+    <!--modal-->
+    <div class="modal fade" id="post_modal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="modalLabel">Delete</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            Do you really want to delete your post?
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <form method="POST" action="{% url 'removePost' post.id %}">
+              {% csrf_token %}
+              <button type="submit" name="post_delete" class="btn btn-danger">Delete</button>
+            </form>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="comment_wrapper">
@@ -37,12 +58,14 @@
       {% if post == comment.post %}
         <div class="comment_content">
           <div class="author_wrapper">
-            <div>Author: {{ comment.user }}</div>
+            <a href="{% url 'profile' comment.user %}">
+              <div>Author: {{ comment.user }}</div>
+            </a>
       
             {% if comment.user.username == user.username %}
             <div class="button_box">
               <button type="submit" class="post_page_btn" name="comment_edit">Edit</button> | 
-              <button type="submit" class="post_page_btn" name="comment_delete">Delete</button>
+              <button type="submit" class="post_page_btn" data-bs-toggle="modal" data-bs-target="#comment_modal">Delete</button>
             </div>
             {% endif %}
           </div>
@@ -50,6 +73,27 @@
           <div>Time: {{ comment.created_time }}</div>
         </div>
         {% endif %}
+        <!--modal-->
+        <div class="modal fade" id="comment_modal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="modalLabel">Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                Do you really want to delete this comment?
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <form method="POST" action="{% url 'removeComment' comment.id %}">
+                  {% csrf_token %}
+                  <button type="submit" name="comment_delete" class="btn btn-danger">Delete</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
       {% endfor %}
     </div>
 
@@ -71,25 +115,7 @@
     </div>
     {% endif %}
   </div>
-  <div class="modal fade" id="modal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="modalLabel">Delete</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          Do you really want to delete this?
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          <form method="POST" action="{% url 'removePost' post.id %}">
-            {% csrf_token %}
-            <button type="submit" name="post_delete" class="btn btn-danger">Delete</button>
-          </form>
-        </div>
-      </div>
-    </div>
-  </div>
+
+  
   {% endfor %}
 {% endblock %}

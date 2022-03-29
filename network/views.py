@@ -119,6 +119,15 @@ def removePost(request, post_id):
     return render(request, "network/posts.html")
 
 
+def removeComment(request, comment_id):
+    if request.method == "POST":
+        if "comment_delete" in request.POST:
+            comment = Comment.objects.get(id=comment_id)
+            comment.delete()
+            return redirect("posts")
+    return render(request, "network/posts.html")
+
+
 def comment(request, post_id):
     if request.user.is_authenticated:
         user = User.objects.get(username=request.user.username)
@@ -147,8 +156,21 @@ def comment(request, post_id):
     return render(request, "network/posts.html")
 
 
-def profile(request):
-    return render(request, "network/profile.html")
+def profile(request, username):
+    if request.user.is_authenticated:
+        user = User.objects.get(username=request.user.username)
+
+    posts = Post.objects.all().filter(user=user)
+    comments = Comment.objects.all()
+
+    return render(
+        request,
+        "network/profile.html",
+        {
+            "posts": posts,
+            "comments": comments,
+        },
+    )
 
 
 def following(request):

@@ -1,0 +1,115 @@
+// variables
+$basicMargin: 20px;
+$wrapperMargin: 10px 20px 10px 20px;
+$basicPadding: 15px;
+$basicBorder: 1px solid lightgrey;
+
+// inheritances
+%spaceBetween {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+%felxColumn {
+  display: flex;
+  flex-direction: column;
+}
+
+// styles
+// tags
+* {
+  padding: 0;
+  margin: 0;
+}
+
+a,
+a:visited {
+  text-decoration: none;
+  color: black;
+}
+
+// # layout.html
+// header
+.header {
+  @extend %spaceBetween;
+  padding: $basicPadding;
+  border-bottom: $basicBorder;
+
+  .header_tabs ul {
+    @extend %spaceBetween;
+    margin: 0;
+    list-style: none;
+  }
+}
+
+// body
+.body {
+  padding: $basicPadding;
+  width: 100%;
+}
+
+// # create.html
+.create_content_wrapper form {
+  @extend %felxColumn;
+
+  .create_submit_btn {
+    margin-top: 20px;
+  }
+}
+
+// # posts.html
+.author_wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  .button_box {
+    display: none;
+  }
+
+  .post_page_btn {
+    margin: 0 5px 0 5px;
+    border-style: none;
+    background: none;
+  }
+}
+
+.post_container {
+  width: 50%;
+  margin: 30px 0px;
+
+  .post_wrapper {
+    margin: $wrapperMargin;
+    padding: $basicPadding;
+    border: $basicBorder;
+  }
+
+  .post_wrapper:hover .button_box {
+    display: flex;
+  }
+}
+
+.comment_wrapper {
+  margin: $wrapperMargin;
+  border: $basicBorder;
+
+  h5 {
+    margin: 15px 15px 0px 15px;
+  }
+
+  .comment_content:hover .button_box {
+    display: block;
+  }
+
+  .comment_content {
+    padding: $basicPadding;
+    border-bottom: $basicBorder;
+  }
+}
+
+.post_comment_wrapper {
+  margin: $wrapperMargin;
+  padding: $basicPadding;
+  border: $basicBorder;
+}

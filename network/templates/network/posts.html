@@ -1,0 +1,95 @@
+{% extends "network/layout.html" %} {% block body %}
+<h1>All Posts</h1>
+{% if user.is_authenticated %}
+<div class="new_post_title">
+  <a href="{% url "create" %}">
+    <h4>New Post</h4>
+  </a>
+</div>
+{% endif %}
+
+  {% for post in posts %}
+  <div class="post_container">
+    <div class="post_wrapper">
+      <h5>POST No.{{ post.id }}</h5>
+
+      <div class="author_wrapper">
+        <div>Author: {{ post.user.username }}</div>
+
+        {% if post.user.username == user.username %}
+        <div class="button_box">
+          <button type="submit" class="post_page_btn" name="comment_edit">Edit</button> | 
+          <a data-bs-toggle="modal" data-bs-target="#modal">
+            <button type="button" id="post_delete" class="post_page_btn" name="post_delete">Delete</button>
+          </a>
+          </div>
+          {% endif %}
+      </div>
+      <div>Date: {{ post.created_time }}</div>
+      <div>❤ {{ post.likeCount}}</div>
+      <div>Content: {{ post.content }}</div>
+    </div>
+
+    <div class="comment_wrapper">
+      <h5>Comment</h5>
+
+    {% for comment in comments %}
+      {% if post == comment.post %}
+        <div class="comment_content">
+          <div class="author_wrapper">
+            <div>Author: {{ comment.user }}</div>
+      
+            {% if comment.user.username == user.username %}
+            <div class="button_box">
+              <button type="submit" class="post_page_btn" name="comment_edit">Edit</button> | 
+              <button type="submit" class="post_page_btn" name="comment_delete">Delete</button>
+            </div>
+            {% endif %}
+          </div>
+          <div>Content: {{ comment.content }}</div>
+          <div>Time: {{ comment.created_time }}</div>
+        </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+
+    {% if user.is_authenticated%}
+    <div class="post_comment_wrapper">
+      <h5>New Comment</h5>
+      {% if alertMessage %}
+      <div class="alert alert-danger" role="alert">{{ alertMessage }}</div>
+      {% endif %}
+      <div class="comment_content_wrapper">
+        <form method="POST" action="{% url 'comment' post.id %}">
+          {% csrf_token%}
+          <textarea name="comment_content" required="required"></textarea>
+          <div class="comment_submit_btn">
+            <input type="submit" value="Submit" />
+          </div>
+        </form>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+  <div class="modal fade" id="modal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalLabel">Delete</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          Do you really want to delete this?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <form method="POST" action="{% url 'removePost' post.id %}">
+            {% csrf_token %}
+            <button type="submit" name="post_delete" class="btn btn-danger">Delete</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+{% endblock %}

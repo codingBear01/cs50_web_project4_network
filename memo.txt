@@ -1,0 +1,9 @@
+model
+	post
+		user
+		date
+		subject
+		content
+		like
+		follow
+		

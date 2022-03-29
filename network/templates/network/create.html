@@ -1,0 +1,23 @@
+{% extends "network/layout.html" %} 
+
+{% block body %} 
+    {% if user.is_authenticated%}
+    <div class="create_wrapper">
+        <h4>New Post</h4>
+        {% if alertMessage %}
+            <div class="alert alert-danger" role="alert">
+                {{ alertMessage }}
+            </div>
+        {% endif %}
+        <div class="create_content_wrapper">
+            <form method="POST">
+            {% csrf_token%}
+            <textarea name="create_content" required="required"></textarea>
+            <div class="create_submit_btn">
+                <input type="submit" value="Post" />
+            </div>
+            </form>
+        </div>
+    </div>
+    {% endif %} 
+{% endblock %}

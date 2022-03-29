@@ -1,0 +1,89 @@
+.header .header_tabs ul, .header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.create_content_wrapper form {
+  display: flex;
+  flex-direction: column;
+}
+
+* {
+  padding: 0;
+  margin: 0;
+}
+
+a,
+a:visited {
+  text-decoration: none;
+  color: black;
+}
+
+.header {
+  padding: 15px;
+  border-bottom: 1px solid lightgrey;
+}
+.header .header_tabs ul {
+  margin: 0;
+  list-style: none;
+}
+
+.body {
+  padding: 15px;
+  width: 100%;
+}
+
+.create_content_wrapper form .create_submit_btn {
+  margin-top: 20px;
+}
+
+.author_wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.author_wrapper .button_box {
+  display: none;
+}
+.author_wrapper .post_page_btn {
+  margin: 0 5px 0 5px;
+  border-style: none;
+  background: none;
+}
+
+.post_container {
+  width: 50%;
+  margin: 30px 0px;
+}
+.post_container .post_wrapper {
+  margin: 10px 20px 10px 20px;
+  padding: 15px;
+  border: 1px solid lightgrey;
+}
+.post_container .post_wrapper:hover .button_box {
+  display: flex;
+}
+
+.comment_wrapper {
+  margin: 10px 20px 10px 20px;
+  border: 1px solid lightgrey;
+}
+.comment_wrapper h5 {
+  margin: 15px 15px 0px 15px;
+}
+.comment_wrapper .comment_content:hover .button_box {
+  display: block;
+}
+.comment_wrapper .comment_content {
+  padding: 15px;
+  border-bottom: 1px solid lightgrey;
+}
+
+.post_comment_wrapper {
+  margin: 10px 20px 10px 20px;
+  padding: 15px;
+  border: 1px solid lightgrey;
+}
+
+/*# sourceMappingURL=styles.css.map */

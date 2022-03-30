@@ -3,8 +3,12 @@ from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
 
-from .models import User, Post, Comment
+
+from .models import User, Post, Comment, Profile
 
 
 def index(request):
@@ -69,8 +73,8 @@ def posts(request):
     if request.user.is_authenticated:
         user = User.objects.get(username=request.user.username)
 
-    posts = Post.objects.all()
-    comments = Comment.objects.all()
+    posts = Post.objects.all().order_by("-created_time")
+    comments = Comment.objects.all().order_by("-created_time")
 
     return render(
         request,
@@ -134,6 +138,8 @@ def comment(request, post_id):
 
         if request.method == "POST":
             commentContent = request.POST.get("comment_content").strip()
+            posts = Post.objects.all()
+            comments = Comment.objects.all()
             post = Post.objects.get(id=post_id)
 
             if commentContent == "":
@@ -142,6 +148,8 @@ def comment(request, post_id):
                     "network/posts.html",
                     {
                         "alertMessage": "You can't comment with empty content!",
+                        "posts": posts,
+                        "comments": comments,
                     },
                 )
 
@@ -156,12 +164,87 @@ def comment(request, post_id):
     return render(request, "network/posts.html")
 
 
+@login_required
+@csrf_exempt
+def postLike(request):
+    if request.method == "POST":
+        postID = request.POST.get("postID")
+        postIsLiked = request.POST.get("postIsLiked")
+
+        try:
+            post = Post.objects.get(id=postID)
+            if postIsLiked == "no":
+                post.like.add(request.user)
+                postIsLiked = "yes"
+            else:
+                post.like.remove(request.user)
+                postIsLiked = "no"
+            post.save()
+
+            return JsonResponse(
+                {
+                    "postLikeCount": post.like.count(),
+                    "postIsLiked": postIsLiked,
+                    "status": 201,
+                },
+                status=201,
+            )
+        except:
+            return JsonResponse(
+                {
+                    "error": "Post not found",
+                    "status": 404,
+                },
+                status=404,
+            )
+
+    return JsonResponse({}, status=400)
+
+
+@login_required
+@csrf_exempt
+def commentLike(request):
+    if request.method == "POST":
+        commentID = request.POST.get("commentID")
+        commentIsLiked = request.POST.get("commentIsLiked")
+
+        try:
+            comment = Comment.objects.get(id=commentID)
+            if commentIsLiked == "no":
+                comment.like.add(request.user)
+                commentIsLiked = "yes"
+            else:
+                comment.like.remove(request.user)
+                commentIsLiked = "no"
+            comment.save()
+
+            return JsonResponse(
+                {
+                    "commentLikeCount": comment.like.count(),
+                    "commentIsLiked": commentIsLiked,
+                    "status": 201,
+                },
+                status=201,
+            )
+        except:
+            return JsonResponse(
+                {
+                    "error": "Post not found",
+                    "status": 404,
+                },
+                status=404,
+            )
+
+    return JsonResponse({}, status=400)
+
+
 def profile(request, username):
     if request.user.is_authenticated:
-        user = User.objects.get(username=request.user.username)
+        pageUser = User.objects.get(username=username)
 
-    posts = Post.objects.all().filter(user=user)
-    comments = Comment.objects.all()
+    posts = Post.objects.all().filter(user=pageUser).order_by("-created_time")
+    comments = Comment.objects.all().order_by("-created_time")
+    usersFollows = Profile.objects.all().filter(user=request.user)
 
     return render(
         request,
@@ -169,9 +252,23 @@ def profile(request, username):
         {
             "posts": posts,
             "comments": comments,
+            "usersFollows": usersFollows,
+            "pageUser": pageUser,
         },
     )
 
 
-def following(request):
-    return render(request, "network/following.html")
+@login_required
+@csrf_exempt
+def follow(request):
+    if request.method == "POST":
+        user = request.POST.get("user")
+        action = request.POST.get("action")
+        return render(
+            request,
+            "network/profile.html",
+            {
+                "test": user,
+            },
+        )
+    return render(request, "network/profile.html")

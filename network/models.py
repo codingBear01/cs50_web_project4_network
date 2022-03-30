@@ -11,11 +11,10 @@ class Post(models.Model):
     content = models.TextField(max_length=500)
     created_time = models.DateTimeField(auto_now_add=True, auto_now=False)
     updated_time = models.DateTimeField(auto_now_add=False, auto_now=True)
-    likeCount = models.IntegerField(default=0)
-    status_like = models.BooleanField(default=False)
+    like = models.ManyToManyField(User, blank=True, related_name="post_like")
 
     def __str__(self):
-        return f"{self.user} created post at {self.created_time}"
+        return f"Author: {self.user} | Posted Time: {self.created_time} | Likes: {self.like.count()}"
 
 
 class Comment(models.Model):
@@ -32,8 +31,16 @@ class Comment(models.Model):
     content = models.TextField(max_length=300)
     created_time = models.DateTimeField(auto_now_add=True, auto_now=False)
     updated_time = models.DateTimeField(auto_now_add=False, auto_now=True)
+    like = models.ManyToManyField(User, blank=True, related_name="comment_like")
 
     def __str__(self):
-        return (
-            f"Author: {self.user} | Post ID: {self.post.id} | Time: {self.created_time}"
-        )
+        return f"Author: {self.user} | Commented Time: {self.created_time} | Likes: {self.like.count()}"
+
+
+class Profile(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    follower = models.ManyToManyField(User, blank=True, related_name="follower_user")
+    following = models.ManyToManyField(User, blank=True, related_name="following_user")
+
+    def __str__(self):
+        return self.user.username

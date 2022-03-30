@@ -38,6 +38,18 @@ a:visited {
   margin-top: 20px;
 }
 
+.like_box {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+.like_box .like {
+  cursor: pointer;
+}
+.like_box .disabled {
+  pointer-events: none;
+}
+
 .author_wrapper {
   display: flex;
   align-items: center;

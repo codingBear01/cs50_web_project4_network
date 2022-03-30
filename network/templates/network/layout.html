@@ -29,8 +29,8 @@
                 <ul>
                 {% if user.is_authenticated %}
                 <li>
-                    <a class="nav-link" href="{% url "profile" user.username %}">
-                        <strong>Welcome! {{ user.username }}</strong>
+                    <a class="nav-link" href="{% url "profile" request.user %}">
+                        <strong>Welcome! {{ request.user }}</strong>
                     </a>
                 </li>
                 {% endif %}
@@ -41,7 +41,7 @@
       
                 {% if user.is_authenticated %}
                 <li>
-                  <a class="nav-link" href="{% url "following" %}">Following</a>
+                  <a class="nav-link" href="#">Following</a>
                 </li>
 
                 <li>
@@ -61,6 +61,7 @@
       </div>
 
     <div class="body">{% block body %} {% endblock %}</div>
-    <script src="{% static 'network/javascript/app.js'%}"></script>
   </body>
+  <script src="{% static 'network/javascript/app.js'%}"></script>
+  {% block script %} {% endblock %}
 </html>

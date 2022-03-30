@@ -59,6 +59,20 @@ a:visited {
 }
 
 // # posts.html
+.like_box {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+
+  .like {
+    cursor: pointer;
+  }
+
+  .disabled {
+    pointer-events: none;
+  }
+}
+
 .author_wrapper {
   display: flex;
   align-items: center;

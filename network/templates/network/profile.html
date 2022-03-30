@@ -1,37 +1,83 @@
-{% extends "network/layout.html" %} {% block body %}
-<h1>Profile Page!</h1>
-<h4>All of your posts</h4>
-{% for post in posts %}
-<div class="post_container">
-  <div class="post_wrapper">
-    <h5>POST No.{{ post.id }}</h5>
+{% extends "network/layout.html" %} 
+{% load static %}
 
-    <div class="author_wrapper">
-      <a href="{% url 'profile' post.user %}">
-        <div>Author: {{ post.user.username }}</div>
-      </a>
-
-      {% if post.user.username == user.username %}
-      <div class="button_box">
-        <button type="submit" class="post_page_btn" name="comment_edit">
-          Edit
-        </button>
-        |
-        <button
-          type="button"
-          id="post_delete"
-          class="post_page_btn"
-          data-bs-toggle="modal"
-          data-bs-target="#post_modal"
-        >
-          Delete
-        </button>
-      </div>
-      {% endif %}
+{% block body %} 
+  {% if user.is_authenticated %}
+  <h1>Profile Page!</h1>
+  <div>{{ test }}</div>
+  
+  <div>
+    {% if pageUser != request.user%}
+    <div>
+      <h4>{{ pageUser }}</h4>
     </div>
-    <div>Date: {{ post.created_time }}</div>
-    <div>❤ {{ post.likeCount}}</div>
-    <div>Content: {{ post.content }}</div>
+
+    <div>
+      <button
+        type="submit"
+        id="follow_btn"
+        data-user="{{ pageUser }}"
+      >
+      {%if pageUser in usersFollows.following.all %}
+      Unfollow
+      {%else%}
+      Follow
+      {%endif%}
+      </button>
+    </div>
+    {% else %}
+    <div>
+      <h4>{{ request.user }}</h4>
+    </div>
+
+    <div>
+      <div>followers: 0</div>
+      <div>followings: 0</div>
+    </div>
+    {% endif %}
   </div>
-</div>
-{% endfor %} {% endblock %}
+
+  <h5>All of {{ pageUser }}'s posts</h5>
+
+    {% for post in posts %}
+    <div class="post_container">
+      <div class="post_wrapper">
+        <h5>POST No.{{ post.id }}</h5>
+
+        <div class="author_wrapper">
+          <a href="{% url 'profile' post.user %}">
+            <div>Author: {{ post.user.username }}</div>
+          </a>
+
+          {% if post.user.username == user.username %}
+          <div class="button_box">
+            <button type="submit" class="post_page_btn" name="comment_edit">
+              Edit
+            </button>
+            |
+            <button
+              type="button"
+              id="post_delete"
+              class="post_page_btn"
+              data-bs-toggle="modal"
+              data-bs-target="#post_modal"
+            >
+              Delete
+            </button>
+          </div>
+          {% endif %}
+        </div>
+        <div>Date: {{ post.created_time }}</div>
+        <div class="like">❤ {{ post.like.count}}</div>
+        <div>Content: {{ post.content }}</div>
+      </div>
+    </div>
+    {% endfor %} 
+  {% endif %} 
+{% endblock %}
+
+{% block script %}
+  {% if pageUser != request.user %}
+    <script src="{% static 'network/javascript/follow.js' %}"></script>
+  {% endif %}
+{% endblock %}

@@ -13,5 +13,7 @@ urlpatterns = [
     path("removeComment/<int:comment_id>", views.removeComment, name="removeComment"),
     path("comment/<int:post_id>", views.comment, name="comment"),
     path("profile/<str:username>", views.profile, name="profile"),
-    path("following", views.following, name="following"),
+    path("postLike", views.postLike),
+    path("commentLike", views.commentLike),
+    path("follow", views.follow),
 ]

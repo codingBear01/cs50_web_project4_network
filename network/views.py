@@ -86,6 +86,7 @@ def posts(request):
     )
 
 
+@login_required
 def create(request):
     if request.user.is_authenticated:
         user = User.objects.get(username=request.user.username)
@@ -114,6 +115,7 @@ def create(request):
     return render(request, "network/error.html")
 
 
+@login_required
 def removePost(request, post_id):
     if request.method == "POST":
         if "post_delete" in request.POST:
@@ -123,6 +125,7 @@ def removePost(request, post_id):
     return render(request, "network/posts.html")
 
 
+@login_required
 def removeComment(request, comment_id):
     if request.method == "POST":
         if "comment_delete" in request.POST:
@@ -132,6 +135,7 @@ def removeComment(request, comment_id):
     return render(request, "network/posts.html")
 
 
+@login_required
 def comment(request, post_id):
     if request.user.is_authenticated:
         user = User.objects.get(username=request.user.username)
@@ -241,6 +245,8 @@ def commentLike(request):
 def profile(request, username):
     if request.user.is_authenticated:
         pageUser = User.objects.get(username=username)
+    else:
+        return render(request, "network/login.html")
 
     posts = Post.objects.all().filter(user=pageUser).order_by("-created_time")
     comments = Comment.objects.all().order_by("-created_time")

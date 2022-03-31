@@ -2,6 +2,7 @@ import json
 from django.contrib import admin
 from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib.auth.admin import UserAdmin
+from django.core.paginator import Paginator
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render, redirect
@@ -15,7 +16,9 @@ from .models import User, Post, Comment
 
 
 def index(request):
-    return render(request, "network/index.html")
+    if request.user.is_authenticated:
+        return redirect("posts")
+    return redirect("login")
 
 
 def login_view(request):
@@ -73,11 +76,12 @@ def register(request):
 
 
 def posts(request):
-    if request.user.is_authenticated:
-        user = User.objects.get(username=request.user.username)
-
     posts = Post.objects.all().order_by("-created_time")
     comments = Comment.objects.all().order_by("-created_time")
+
+    paginator = Paginator(posts, 10)
+    page = request.GET.get("page")
+    posts = paginator.get_page(page)
 
     return render(
         request,
@@ -145,6 +149,7 @@ def postEdit(request):
                 }
             )
         post.content = postContent
+        post.save()
 
     return JsonResponse(
         {
@@ -278,6 +283,10 @@ def profile(request, username):
     posts = Post.objects.all().filter(user=pageUser).order_by("-created_time")
     comments = Comment.objects.all().order_by("-created_time")
 
+    paginator = Paginator(posts, 10)
+    page = request.GET.get("page")
+    posts = paginator.get_page(page)
+
     if request.method == "POST":
         if "follow_btn" in request.POST:
             pageUser.follower.add(request.user)
@@ -310,6 +319,10 @@ def following(request, username):
     followings = User.objects.get(username=username).following.all()
     posts = Post.objects.filter(user__in=followings).order_by("-created_time")
     comments = Comment.objects.all()
+
+    paginator = Paginator(posts, 10)
+    page = request.GET.get("page")
+    posts = paginator.get_page(page)
 
     return render(
         request,

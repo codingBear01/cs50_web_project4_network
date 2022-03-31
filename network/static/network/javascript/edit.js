@@ -17,9 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
       postContentDiv.innerHTML = `
       <form class="post_edit_form">
         <div>
-            <textarea class="post_edit_textarea">
-                ${postContentDiv.innerHTML}
-            </textarea>
+            <textarea class="post_edit_textarea">${postContentDiv.innerHTML}</textarea>
         </div>
         <input type="submit" value="Save" />
       </form>
@@ -45,7 +43,6 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
               console.log(result.message);
               postContentDiv.innerHTML = postContent;
-              console.log(postContent.innerHTML);
               btn.style.display = 'block';
               postDelBtn.style.display = 'block';
               postBtnDivider.style.display = 'block';

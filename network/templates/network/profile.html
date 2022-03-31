@@ -50,33 +50,110 @@
 
           {% if post.user.username == user.username %}
           <div class="post_button_box">
-            <button type="submit" class="post_page_btn post_edit_btn" name="comment_edit">
-              Edit
-            </button>
-            |
-            <button
-              type="button"
-              id="post_delete"
-              class="post_page_btn"
-              data-bs-toggle="modal"
-              data-bs-target="#post_modal"
+            <button 
+            type="submit" 
+            class="post_page_btn post_edit_btn" 
+            name="comment_edit"
+            data-postid="{{ post.id }}"
             >
-              Delete
-            </button>
+              Edit
+            </button><span class="post_button_divider"> | </span>
+            <button type="button" id="post_delete" class="post_page_btn post_del_btn" data-bs-toggle="modal" data-bs-target="#post_modal">Delete</button>
           </div>
           {% endif %}
         </div>
         <div>Date: {{ post.created_time }}</div>
         <div class="like">❤ {{ post.like.count}}</div>
-        <div>Content: {{ post.content }}</div>
+        Content:<div class="post_content_div{{ post.id }}"> {{ post.content }}</div>
+      </div>
+    </div>
+
+     <!--modal-->
+     <div class="modal fade" id="post_modal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="modalLabel">Delete</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            Do you really want to delete your post?
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <form method="POST" action="{% url 'removePost' post.id %}">
+              {% csrf_token %}
+              <button type="submit" name="post_delete" class="btn btn-danger">Delete</button>
+            </form>
+          </div>
+        </div>
       </div>
     </div>
     {% endfor %} 
+
+    {% if posts.paginator.num_pages > 1 %}
+      <nav aria-label="Page navigation example">
+        <ul class="pagination">
+          {% if posts.has_previous %}
+          <li class="page-item">
+            <a class="page-link" href="?page=1">First</a>
+          </li>
+          <li class="page-item">
+            <a
+              class="page-link"
+              href="?page={{ posts.previous_page_number }}"
+              aria-label="Previous"
+            >
+              <span aria-hidden="true">&laquo;</span>
+            </a>
+          </li>
+          {%else%}
+          <li class="page-item disabled">
+            <a class="page-link" href="#" aria-label="Previous">
+              <span aria-hidden="true">&laquo;</span>
+            </a>
+          </li>
+          {% endif %}
+
+          <li class="page-item current-item">
+            <span class="current page-link">
+              Page {{ posts.number }} of {{ posts.paginator.num_pages }}
+            </span>
+          </li>
+
+          {% if posts.has_next %}
+          <li class="page-item">
+            <a
+              class="page-link"
+              href="?page={{ posts.next_page_number }}"
+              aria-label="Next"
+            >
+              <span aria-hidden="true">&raquo;</span>
+            </a>
+          </li>
+          <li class="page-item">
+            <a class="page-link" href="?page={{ posts.paginator.num_pages }}">
+              Last
+            </a>
+          </li>
+          {%else%}
+          <li class="page-item disabled">
+            <a class="page-link" href="#" aria-label="Next">
+              <span aria-hidden="true">&raquo;</span>
+            </a>
+          </li>
+          {% endif %}
+        </ul>
+      </nav>
+    {% endif %}
   {% endif %} 
 {% endblock %}
 
 {% block script %}
 {% if pageUser != request.user %}
     <script src="{% static 'network/javascript/follow.js' %}"></script>
+{% endif %}
+{% if user.is_authenticated%}
+    <script src="{% static 'network/javascript/edit.js' %}"></script>
 {% endif %}
 {% endblock %}

@@ -5,9 +5,12 @@
 <h1>All Posts</h1>
 {% if user.is_authenticated %}
 <div class="new_post_title">
-  <a href="{% url "create" %}">
-    <h4>New Post</h4>
-  </a>
+  <div class="create-post-btn">
+    <a href="{% url "create" %}">
+      <h5>New Post</h5>
+      <i class="fa-solid fa-pen-to-square"></i>
+    </a>
+  </div>
 </div>
 {% endif %}
 
@@ -20,6 +23,7 @@
         <div class="author">Author: 
           <a href="{% url 'profile' post.user %}">{{ post.user.username }}</a>
         </div>
+
         {% if post.user.username == user.username %}
           <div class="post_button_box">
             <button 
@@ -163,6 +167,62 @@
     </div>
   </div>
   {% endfor %}
+
+  {% if posts.paginator.num_pages > 1 %}
+    <nav aria-label="Page navigation example">
+      <ul class="pagination">
+        {% if posts.has_previous %}
+        <li class="page-item">
+          <a class="page-link" href="?page=1">First</a>
+        </li>
+        <li class="page-item">
+          <a
+            class="page-link"
+            href="?page={{ posts.previous_page_number }}"
+            aria-label="Previous"
+          >
+            <span aria-hidden="true">&laquo;</span>
+          </a>
+        </li>
+        {%else%}
+        <li class="page-item disabled">
+          <a class="page-link" href="#" aria-label="Previous">
+            <span aria-hidden="true">&laquo;</span>
+          </a>
+        </li>
+        {% endif %}
+
+        <li class="page-item current-item">
+          <span class="current page-link">
+            Page {{ posts.number }} of {{ posts.paginator.num_pages }}
+          </span>
+        </li>
+
+        {% if posts.has_next %}
+        <li class="page-item">
+          <a
+            class="page-link"
+            href="?page={{ posts.next_page_number }}"
+            aria-label="Next"
+          >
+            <span aria-hidden="true">&raquo;</span>
+          </a>
+        </li>
+        <li class="page-item">
+          <a class="page-link" href="?page={{ posts.paginator.num_pages }}">
+            Last
+          </a>
+        </li>
+        {%else%}
+        <li class="page-item disabled">
+          <a class="page-link" href="#" aria-label="Next">
+            <span aria-hidden="true">&raquo;</span>
+          </a>
+        </li>
+        {% endif %}
+      </ul>
+    </nav>
+  {% endif %}
 {% endblock %}
 
 {% block script %}

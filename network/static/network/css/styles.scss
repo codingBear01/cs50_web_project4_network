@@ -60,6 +60,29 @@ a:visited {
 }
 
 // # posts.html
+.create-post-btn {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 10px;
+  width: 50%;
+
+  a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  h5 {
+    margin-right: 10px;
+    margin-bottom: 0px;
+  }
+
+  i {
+    font-size: 22px;
+  }
+}
+
 .like_box {
   display: flex;
   justify-content: flex-end;

@@ -2,109 +2,186 @@
 {% load static %}
 {% block body %}
 <h4>{{ request.user }}'s Following Page</h4>
-{% if user.is_authenticated %} 
-{% for post in posts %}
-<div class="post_container">
-  <div class="post_wrapper">
-    <h5>POST No.{{ post.id }}</h5>
+  {% if user.is_authenticated %} 
+    {% for post in posts %}
+    <div class="post_container">
+      <div class="post_wrapper">
+        <h5>POST No.{{ post.id }}</h5>
 
-    <div class="author_wrapper">
-      <div class="author">Author: 
-        <a href="{% url 'profile' post.user %}">{{ post.user.username }}</a>
-      </div>
-      {% if post.user.username == user.username %}
-        <div class="post_button_box">
-        <button type="submit" class="post_page_btn" name="comment_edit">Edit</button> | 
-        <button type="button" id="post_delete" class="post_page_btn" data-bs-toggle="modal" data-bs-target="#post_modal">Delete</button>
-        </div>
-      {% endif %}
-    </div>
-    <div>Date: {{ post.created_time }} </div>
-    <div class="like_box">
-      <div
-        class="post_like like {% if request.user == post.user %} disabled {% endif %}"
-        post_id="{{ post.id }}"
-        id="post_like_{{ post.id }}"
-        {% if not request.user in post.like.all %}
-        post_is_liked="no"
-        {% else %}
-        post_is_liked="yes"
-        {% endif %}
-      >
-        <span id="post_heart_{{ post.id }}">
-          {% if not request.user in post.like.all %}
-          🤍
-          {% else %}
-          ❤
-          {% endif %}
-        </span>
-        <span id="post_count_{{ post.id }}">{{ post.like.count }}</span>
-      </div>
-    </div>      
-    <div>Content: {{ post.content }}</div>
-    
-  <div class="comment_wrapper">
-    <h5>Comment</h5>
-  {% for comment in comments %}
-    {% if post == comment.post %}
-      <div class="comment_content">
         <div class="author_wrapper">
-          <div>Author: 
-            <a href="{% url 'profile' comment.user %}">{{ comment.user }}</a>
+          <div class="author">Author: 
+            <a href="{% url 'profile' post.user %}">{{ post.user.username }}</a>
           </div>
-          {% if comment.user.username == user.username %}
-            <div class="comment_button_box">
-              <button type="submit" class="post_page_btn" name="comment_edit">Edit</button> | 
-              <button type="submit" class="post_page_btn" data-bs-toggle="modal" data-bs-target="#comment_modal">Delete</button>
+          {% if post.user.username == user.username %}
+            <div class="post_button_box">
+            <button type="submit" class="post_page_btn" name="comment_edit">Edit</button> | 
+            <button type="button" id="post_delete" class="post_page_btn" data-bs-toggle="modal" data-bs-target="#post_modal">Delete</button>
             </div>
           {% endif %}
         </div>
-        <div>Date: {{ comment.created_time }}</div>
+        <div>Date: {{ post.created_time }} </div>
         <div class="like_box">
-        <div
-          class="comment_like like {% if request.user == comment.user %} disabled {% endif %}"
-          comment_id="{{ comment.id }}"
-          id="comment_like_{{ comment.id }}"
-          {% if not request.user in comment.like.all %}
-          comment_is_liked="no"
-          {% else %}
-          comment_is_liked="yes"
-          {% endif %}
-        >
-            <span id="comment_heart_{{ comment.id }}">
-              {% if not request.user in comment.like.all %}
+          <div
+            class="post_like like {% if request.user == post.user %} disabled {% endif %}"
+            post_id="{{ post.id }}"
+            id="post_like_{{ post.id }}"
+            {% if not request.user in post.like.all %}
+            post_is_liked="no"
+            {% else %}
+            post_is_liked="yes"
+            {% endif %}
+          >
+            <span id="post_heart_{{ post.id }}">
+              {% if not request.user in post.like.all %}
               🤍
               {% else %}
               ❤
               {% endif %}
             </span>
-            <span id="comment_count_{{ comment.id }}">{{ comment.like.count }}</span>
+            <span id="post_count_{{ post.id }}">{{ post.like.count }}</span>
+          </div>
+        </div>      
+        Content: <div class="post_content_div{{ post.id }}"> {{ post.content }}</div>
+        
+      <div class="comment_wrapper">
+        <h5>Comment</h5>
+      {% for comment in comments %}
+        {% if post == comment.post %}
+          <div class="comment_content">
+            <div class="author_wrapper">
+              <div>Author: 
+                <a href="{% url 'profile' comment.user %}">{{ comment.user }}</a>
+              </div>
+              {% if comment.user.username == user.username %}
+                <div class="comment_button_box">
+                  <button type="submit" class="post_page_btn" name="comment_edit">Edit</button> | 
+                  <button type="submit" class="post_page_btn" data-bs-toggle="modal" data-bs-target="#comment_modal">Delete</button>
+                </div>
+              {% endif %}
+            </div>
+            <div>Date: {{ comment.created_time }}</div>
+            <div class="like_box">
+            <div
+              class="comment_like like {% if request.user == comment.user %} disabled {% endif %}"
+              comment_id="{{ comment.id }}"
+              id="comment_like_{{ comment.id }}"
+              {% if not request.user in comment.like.all %}
+              comment_is_liked="no"
+              {% else %}
+              comment_is_liked="yes"
+              {% endif %}
+            >
+                <span id="comment_heart_{{ comment.id }}">
+                  {% if not request.user in comment.like.all %}
+                  🤍
+                  {% else %}
+                  ❤
+                  {% endif %}
+                </span>
+                <span id="comment_count_{{ comment.id }}">{{ comment.like.count }}</span>
+              </div>
+            </div>
+            Content: <div> {{ comment.content }}</div>
+          </div>
+        {% endif %}
+        <!--modal-->
+        <div class="modal fade" id="comment_modal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="modalLabel">Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                Do you really want to delete this comment?
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <form method="POST" action="{% url 'removeComment' comment.id %}">
+                  {% csrf_token %}
+                  <button type="submit" name="comment_delete" class="btn btn-danger">Delete</button>
+                </form>
+              </div>
+            </div>
           </div>
         </div>
-        <div>Content: {{ comment.content }}</div>
-      </div>
-    {% endif %}
-      {% endfor %}
-    </div>
-    {% if user.is_authenticated%}
-  <div class="post_comment_wrapper">
-    <h5>New Comment</h5>
-    
-    <div class="comment_content_wrapper">
-      <form method="POST" action="{% url 'comment' post.id %}">
-        {% csrf_token%}
-        <textarea name="comment_content" class="comment_textarea" required="required"></textarea>
-        <div class="comment_submit_btn">
-          <input type="submit" class="comment_submit_btn" value="Submit" />
+          {% endfor %}
         </div>
-      </form>
+        {% if user.is_authenticated%}
+      <div class="post_comment_wrapper">
+        <h5>New Comment</h5>
+        
+        <div class="comment_content_wrapper">
+          <form method="POST" action="{% url 'comment' post.id %}">
+            {% csrf_token%}
+            <textarea name="comment_content" class="comment_textarea" required="required"></textarea>
+            <div class="comment_submit_btn">
+              <input type="submit" class="comment_submit_btn" value="Submit" />
+            </div>
+          </form>
+        </div>
+      </div>
+      {% endif %}
+      </div>
     </div>
-  </div>
-  {% endif %}
-  </div>
-</div>
-{% endfor %}
-{% endif %} 
+    {% endfor %}
+    
+    {% if posts.paginator.num_pages > 1 %}
+      <nav aria-label="Page navigation example">
+        <ul class="pagination">
+          {% if posts.has_previous %}
+          <li class="page-item">
+            <a class="page-link" href="?page=1">First</a>
+          </li>
+          <li class="page-item">
+            <a
+              class="page-link"
+              href="?page={{ posts.previous_page_number }}"
+              aria-label="Previous"
+            >
+              <span aria-hidden="true">&laquo;</span>
+            </a>
+          </li>
+          {%else%}
+          <li class="page-item disabled">
+            <a class="page-link" href="#" aria-label="Previous">
+              <span aria-hidden="true">&laquo;</span>
+            </a>
+          </li>
+          {% endif %}
+
+          <li class="page-item current-item">
+            <span class="current page-link">
+              Page {{ posts.number }} of {{ posts.paginator.num_pages }}
+            </span>
+          </li>
+
+          {% if posts.has_next %}
+          <li class="page-item">
+            <a
+              class="page-link"
+              href="?page={{ posts.next_page_number }}"
+              aria-label="Next"
+            >
+              <span aria-hidden="true">&raquo;</span>
+            </a>
+          </li>
+          <li class="page-item">
+            <a class="page-link" href="?page={{ posts.paginator.num_pages }}">
+              Last
+            </a>
+          </li>
+          {%else%}
+          <li class="page-item disabled">
+            <a class="page-link" href="#" aria-label="Next">
+              <span aria-hidden="true">&raquo;</span>
+            </a>
+          </li>
+          {% endif %}
+        </ul>
+      </nav>
+    {% endif %}
+  {% endif %} 
 {% endblock %}
 
 {% block script %}

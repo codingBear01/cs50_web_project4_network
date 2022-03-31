@@ -38,6 +38,26 @@ a:visited {
   margin-top: 20px;
 }
 
+.create-post-btn {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 10px;
+  width: 50%;
+}
+.create-post-btn a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.create-post-btn h5 {
+  margin-right: 10px;
+  margin-bottom: 0px;
+}
+.create-post-btn i {
+  font-size: 22px;
+}
+
 .like_box {
   display: flex;
   justify-content: flex-end;

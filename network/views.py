@@ -1,14 +1,17 @@
-from django.contrib.auth import authenticate, login, logout
+import json
+from django.contrib import admin
+from django.contrib.auth import authenticate, login, logout, get_user_model
+from django.contrib.auth.admin import UserAdmin
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render, redirect
+from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 
 
-from .models import User, Post, Comment, Profile
+from .models import User, Post, Comment
 
 
 def index(request):
@@ -116,6 +119,42 @@ def create(request):
 
 
 @login_required
+@csrf_exempt
+def postEdit(request):
+    if request.method != "PUT":
+        return JsonResponse(
+            {
+                "error": "PUT request required.",
+            },
+            status=400,
+        )
+
+    if not request.user.is_authenticated:
+        return redirect("login")
+
+    data = json.loads(request.body)
+    postID = data.get("postID", "")
+    post = Post.objects.get(id=postID)
+    postContent = data.get("postContent", "")
+
+    if postContent:
+        if request.user != post.user:
+            return JsonResponse(
+                {
+                    "error": "You can only edit your own posts!",
+                }
+            )
+        post.content = postContent
+
+    return JsonResponse(
+        {
+            "message": "Post edited successfully!",
+        },
+        status=201,
+    )
+
+
+@login_required
 def removePost(request, post_id):
     if request.method == "POST":
         if "post_delete" in request.POST:
@@ -141,21 +180,8 @@ def comment(request, post_id):
         user = User.objects.get(username=request.user.username)
 
         if request.method == "POST":
-            commentContent = request.POST.get("comment_content").strip()
-            posts = Post.objects.all()
-            comments = Comment.objects.all()
+            commentContent = request.POST.get("comment_content")
             post = Post.objects.get(id=post_id)
-
-            if commentContent == "":
-                return render(
-                    request,
-                    "network/posts.html",
-                    {
-                        "alertMessage": "You can't comment with empty content!",
-                        "posts": posts,
-                        "comments": comments,
-                    },
-                )
 
             comment = Comment(
                 user=user,
@@ -242,6 +268,7 @@ def commentLike(request):
     return JsonResponse({}, status=400)
 
 
+@login_required
 def profile(request, username):
     if request.user.is_authenticated:
         pageUser = User.objects.get(username=username)
@@ -250,7 +277,22 @@ def profile(request, username):
 
     posts = Post.objects.all().filter(user=pageUser).order_by("-created_time")
     comments = Comment.objects.all().order_by("-created_time")
-    usersFollows = Profile.objects.all().filter(user=request.user)
+
+    if request.method == "POST":
+        if "follow_btn" in request.POST:
+            pageUser.follower.add(request.user)
+            pageUser.save()
+
+            user = User.objects.get(username=request.user)
+            user.following.add(pageUser)
+            user.save()
+        else:
+            pageUser.follower.remove(request.user)
+            pageUser.save()
+
+            user = User.objects.get(username=request.user)
+            user.following.remove(pageUser)
+            user.save()
 
     return render(
         request,
@@ -258,23 +300,23 @@ def profile(request, username):
         {
             "posts": posts,
             "comments": comments,
-            "usersFollows": usersFollows,
             "pageUser": pageUser,
         },
     )
 
 
 @login_required
-@csrf_exempt
-def follow(request):
-    if request.method == "POST":
-        user = request.POST.get("user")
-        action = request.POST.get("action")
-        return render(
-            request,
-            "network/profile.html",
-            {
-                "test": user,
-            },
-        )
-    return render(request, "network/profile.html")
+def following(request, username):
+    followings = User.objects.get(username=username).following.all()
+    posts = Post.objects.filter(user__in=followings).order_by("-created_time")
+    comments = Comment.objects.all()
+
+    return render(
+        request,
+        "network/following.html",
+        {
+            "followings": followings,
+            "posts": posts,
+            "comments": comments,
+        },
+    )

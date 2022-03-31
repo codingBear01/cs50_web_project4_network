@@ -1,5 +1,6 @@
 // variables
 $basicMargin: 20px;
+$commentMargin: 10px;
 $wrapperMargin: 10px 20px 10px 20px;
 $basicPadding: 15px;
 $basicBorder: 1px solid lightgrey;
@@ -78,7 +79,8 @@ a:visited {
   align-items: center;
   justify-content: space-between;
 
-  .button_box {
+  .post_button_box,
+  .comment_button_box {
     display: none;
   }
 
@@ -99,31 +101,32 @@ a:visited {
     border: $basicBorder;
   }
 
-  .post_wrapper:hover .button_box {
+  .post_wrapper:hover .post_button_box {
     display: flex;
   }
 }
 
 .comment_wrapper {
-  margin: $wrapperMargin;
+  margin-top: $commentMargin;
   border: $basicBorder;
 
   h5 {
     margin: 15px 15px 0px 15px;
   }
 
-  .comment_content:hover .button_box {
+  .comment_content:hover .comment_button_box {
     display: block;
   }
 
   .comment_content {
     padding: $basicPadding;
     border-bottom: $basicBorder;
+    width: 100%;
   }
 }
 
 .post_comment_wrapper {
-  margin: $wrapperMargin;
+  margin-top: $commentMargin;
   padding: $basicPadding;
   border: $basicBorder;
 }

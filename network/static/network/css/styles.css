@@ -55,7 +55,8 @@ a:visited {
   align-items: center;
   justify-content: space-between;
 }
-.author_wrapper .button_box {
+.author_wrapper .post_button_box,
+.author_wrapper .comment_button_box {
   display: none;
 }
 .author_wrapper .post_page_btn {
@@ -73,27 +74,28 @@ a:visited {
   padding: 15px;
   border: 1px solid lightgrey;
 }
-.post_container .post_wrapper:hover .button_box {
+.post_container .post_wrapper:hover .post_button_box {
   display: flex;
 }
 
 .comment_wrapper {
-  margin: 10px 20px 10px 20px;
+  margin-top: 10px;
   border: 1px solid lightgrey;
 }
 .comment_wrapper h5 {
   margin: 15px 15px 0px 15px;
 }
-.comment_wrapper .comment_content:hover .button_box {
+.comment_wrapper .comment_content:hover .comment_button_box {
   display: block;
 }
 .comment_wrapper .comment_content {
   padding: 15px;
   border-bottom: 1px solid lightgrey;
+  width: 100%;
 }
 
 .post_comment_wrapper {
-  margin: 10px 20px 10px 20px;
+  margin-top: 10px;
   padding: 15px;
   border: 1px solid lightgrey;
 }

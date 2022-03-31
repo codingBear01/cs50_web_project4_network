@@ -3,7 +3,18 @@ from django.db import models
 
 
 class User(AbstractUser):
-    pass
+    follower = models.ManyToManyField(
+        "self",
+        blank=True,
+        symmetrical=False,
+        related_name="user_follower",
+    )
+    following = models.ManyToManyField(
+        "self",
+        blank=True,
+        symmetrical=False,
+        related_name="user_following",
+    )
 
 
 class Post(models.Model):
@@ -35,12 +46,3 @@ class Comment(models.Model):
 
     def __str__(self):
         return f"Author: {self.user} | Commented Time: {self.created_time} | Likes: {self.like.count()}"
-
-
-class Profile(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    follower = models.ManyToManyField(User, blank=True, related_name="follower_user")
-    following = models.ManyToManyField(User, blank=True, related_name="following_user")
-
-    def __str__(self):
-        return self.user.username

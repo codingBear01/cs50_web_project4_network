@@ -1,3 +1,114 @@
-{% extends "network/layout.html" %} {% block body %}
-<h1>Following Page!</h1>
+{% extends "network/layout.html" %} 
+{% load static %}
+{% block body %}
+<h4>{{ request.user }}'s Following Page</h4>
+{% if user.is_authenticated %} 
+{% for post in posts %}
+<div class="post_container">
+  <div class="post_wrapper">
+    <h5>POST No.{{ post.id }}</h5>
+
+    <div class="author_wrapper">
+      <div class="author">Author: 
+        <a href="{% url 'profile' post.user %}">{{ post.user.username }}</a>
+      </div>
+      {% if post.user.username == user.username %}
+        <div class="post_button_box">
+        <button type="submit" class="post_page_btn" name="comment_edit">Edit</button> | 
+        <button type="button" id="post_delete" class="post_page_btn" data-bs-toggle="modal" data-bs-target="#post_modal">Delete</button>
+        </div>
+      {% endif %}
+    </div>
+    <div>Date: {{ post.created_time }} </div>
+    <div class="like_box">
+      <div
+        class="post_like like {% if request.user == post.user %} disabled {% endif %}"
+        post_id="{{ post.id }}"
+        id="post_like_{{ post.id }}"
+        {% if not request.user in post.like.all %}
+        post_is_liked="no"
+        {% else %}
+        post_is_liked="yes"
+        {% endif %}
+      >
+        <span id="post_heart_{{ post.id }}">
+          {% if not request.user in post.like.all %}
+          🤍
+          {% else %}
+          ❤
+          {% endif %}
+        </span>
+        <span id="post_count_{{ post.id }}">{{ post.like.count }}</span>
+      </div>
+    </div>      
+    <div>Content: {{ post.content }}</div>
+    
+  <div class="comment_wrapper">
+    <h5>Comment</h5>
+  {% for comment in comments %}
+    {% if post == comment.post %}
+      <div class="comment_content">
+        <div class="author_wrapper">
+          <div>Author: 
+            <a href="{% url 'profile' comment.user %}">{{ comment.user }}</a>
+          </div>
+          {% if comment.user.username == user.username %}
+            <div class="comment_button_box">
+              <button type="submit" class="post_page_btn" name="comment_edit">Edit</button> | 
+              <button type="submit" class="post_page_btn" data-bs-toggle="modal" data-bs-target="#comment_modal">Delete</button>
+            </div>
+          {% endif %}
+        </div>
+        <div>Date: {{ comment.created_time }}</div>
+        <div class="like_box">
+        <div
+          class="comment_like like {% if request.user == comment.user %} disabled {% endif %}"
+          comment_id="{{ comment.id }}"
+          id="comment_like_{{ comment.id }}"
+          {% if not request.user in comment.like.all %}
+          comment_is_liked="no"
+          {% else %}
+          comment_is_liked="yes"
+          {% endif %}
+        >
+            <span id="comment_heart_{{ comment.id }}">
+              {% if not request.user in comment.like.all %}
+              🤍
+              {% else %}
+              ❤
+              {% endif %}
+            </span>
+            <span id="comment_count_{{ comment.id }}">{{ comment.like.count }}</span>
+          </div>
+        </div>
+        <div>Content: {{ comment.content }}</div>
+      </div>
+    {% endif %}
+      {% endfor %}
+    </div>
+    {% if user.is_authenticated%}
+  <div class="post_comment_wrapper">
+    <h5>New Comment</h5>
+    
+    <div class="comment_content_wrapper">
+      <form method="POST" action="{% url 'comment' post.id %}">
+        {% csrf_token%}
+        <textarea name="comment_content" class="comment_textarea" required="required"></textarea>
+        <div class="comment_submit_btn">
+          <input type="submit" class="comment_submit_btn" value="Submit" />
+        </div>
+      </form>
+    </div>
+  </div>
+  {% endif %}
+  </div>
+</div>
+{% endfor %}
+{% endif %} 
+{% endblock %}
+
+{% block script %}
+{% if user.is_authenticated%}
+  <script src="{% static 'network/javascript/comment.js' %}"></script>
+{% endif %}
 {% endblock %}

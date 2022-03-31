@@ -1,38 +1,37 @@
 {% extends "network/layout.html" %} 
 {% load static %}
+<link rel="icon" href="data:;base64,iVBORw0KGgo=" />
 
 {% block body %} 
   {% if user.is_authenticated %}
   <h1>Profile Page!</h1>
-  <div>{{ test }}</div>
-  
   <div>
-    {% if pageUser != request.user%}
+    {% if pageUser != request.user %}
     <div>
       <h4>{{ pageUser }}</h4>
     </div>
 
-    <div>
-      <button
-        type="submit"
-        id="follow_btn"
-        data-user="{{ pageUser }}"
-      >
-      {%if pageUser in usersFollows.following.all %}
-      Unfollow
-      {%else%}
-      Follow
-      {%endif%}
-      </button>
-    </div>
+    <form method="POST" action="{% url 'profile' pageUser.username %}">
+      {% csrf_token %}
+      {% if request.user in pageUser.follower.all %}
+      <input type="submit" value="Unfollow" name="unfollow_btn">
+      {% else %}
+      <input type="submit" value="Follow" name="follow_btn">
+      {% endif %}
+    </form>
+
+    <div>Followings: {{ pageUser.following.all | length }}</div>
+    <div>Followers: {{ pageUser.follower.all | length }}</div>
+
     {% else %}
+
     <div>
       <h4>{{ request.user }}</h4>
     </div>
 
     <div>
-      <div>followers: 0</div>
-      <div>followings: 0</div>
+      <div>Followings: {{ request.user.following.all | length }}</div>
+      <div>Followers: {{ request.user.follower.all | length }}</div>
     </div>
     {% endif %}
   </div>
@@ -50,8 +49,8 @@
           </a>
 
           {% if post.user.username == user.username %}
-          <div class="button_box">
-            <button type="submit" class="post_page_btn" name="comment_edit">
+          <div class="post_button_box">
+            <button type="submit" class="post_page_btn post_edit_btn" name="comment_edit">
               Edit
             </button>
             |
@@ -77,7 +76,7 @@
 {% endblock %}
 
 {% block script %}
-  {% if pageUser != request.user %}
+{% if pageUser != request.user %}
     <script src="{% static 'network/javascript/follow.js' %}"></script>
-  {% endif %}
+{% endif %}
 {% endblock %}

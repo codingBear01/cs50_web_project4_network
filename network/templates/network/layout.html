@@ -41,7 +41,7 @@
       
                 {% if user.is_authenticated %}
                 <li>
-                  <a class="nav-link" href="#">Following</a>
+                  <a class="nav-link" href="{% url 'following' request.user %}">Following</a>
                 </li>
 
                 <li>
